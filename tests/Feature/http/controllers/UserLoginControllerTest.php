@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class UserLoginControllerTest extends TestCase
 {
@@ -27,16 +28,16 @@ class UserLoginControllerTest extends TestCase
             ->assertRedirect($url);
 
         $this->post($url, ['email' => ''])
-            ->assertInvalid(['email' => 'emailは必ず指定してください。']);
+            ->assertInvalid(['email' => 'メールアドレスは必ず指定してください。']);
 
         $this->post($url, ['email' => 'aa@bb@cc'])
-            ->assertInvalid(['email' => 'emailには、有効なメールアドレスを指定してください。']);
+            ->assertInvalid(['email' => 'メールアドレスには、有効なメールアドレスを指定してください。']);
 
         $this->post($url, ['email' => 'aa@ああ.いい'])
-            ->assertInvalid(['email' => 'emailには、有効なメールアドレスを指定してください。']);
+            ->assertInvalid(['email' => 'メールアドレスには、有効なメールアドレスを指定してください。']);
 
         $this->post($url, ['password' => ''])
-            ->assertInvalid(['password' => 'passwordは必ず指定してください。']);
+            ->assertInvalid(['password' => 'パスワードは必ず指定してください。']);
     }
 
     /** @test */
@@ -80,7 +81,59 @@ class UserLoginControllerTest extends TestCase
             ])
             ->assertOk()
             ->assertSee('メールアドレスかパスワードが間違っています。')
-            ->assertSee('<h1>ログイン画面</h1>', false)
-            ->assertSeetext('ログイン画面');
+            ->assertSee('<h1>ログイン画面</h1>', false);
+    }
+
+    /** @test */
+    function 認証エラーなのでValidationExceptionの例外が発生する()
+    {
+        $this->withoutExceptionHandling();
+
+        //$this->expectException(ValidationException::class);
+
+        try {
+            $this->post('mypage/login', [])
+                ->assertRedirect();
+            $this->fail('例外が発生しませんでしたよ。');
+        } catch (ValidationException $e) {
+            $this->assertSame(
+                'メールアドレスは必ず指定してください。',
+                $e->errors()['email'][0]
+            );
+        }
+    }
+
+    /** @test */
+    function 認証OKなのでvalidationExceptionの例外が発生しない()
+    {
+        $this->withoutExceptionHandling();
+
+        $user = User::factory()->create([
+            'email' => 'aaa@bbb.net',
+            'password' => Hash::make('abcd1234'),
+        ]);
+
+        try {
+            $this->post('mypage/login', [
+                'email' => 'aaa@bbb.net',
+                'password' => 'abcd1234',
+            ])->assertRedirect('mypage/posts');
+        } catch (ValidationException $e) {
+            $this->fail('例外が発生してしまいましたよ。');
+        }
+    }
+
+    /** @test */
+    function ログアウトできる()
+    {
+        $this->login();
+
+        $this->post('mypage/logout')
+            ->assertRedirect('mypage/login');
+
+        $this->get('mypage/login')
+            ->assertSee('ログアウトしました。');
+
+        $this->assertGuest();
     }
 }

@@ -16,7 +16,7 @@ class UserLoginController extends Controller
     {
         $credentials = $request->validate([
             'email' => ['required', 'email:filter'],
-            'password' => ['required']
+            'password' => ['required'],
         ]);
 
         if (Auth::attempt($credentials)) {
@@ -28,6 +28,17 @@ class UserLoginController extends Controller
         return back()->withErrors([
             'email' => 'メールアドレスかパスワードが間違っています。'
         ])->withInput();
-        //テスト
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect(route('login'))
+            ->with('status', 'ログアウトしました。');
     }
 }

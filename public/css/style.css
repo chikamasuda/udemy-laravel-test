@@ -174,9 +174,19 @@ select {
 
 h1 {
     font-size: 30px;
-    margin: 70px 0 20px 0px;
+    margin: 70px 0 20px 100px;
 }
 
 li {
+    margin-left: 100px;
+    list-style: none;
+}
+
+nav ul {
+    display: flex;
+    margin-top: 30px;
+}
+
+form {
     margin-left: 100px;
 }

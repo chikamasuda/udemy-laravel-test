@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\Mypage\PostManageController;
 use App\Http\Controllers\SignUpController;
 use App\Http\Controllers\UserLoginController;
 use Illuminate\Support\Facades\Route;
@@ -24,5 +25,10 @@ Route::get('posts/{post}', [PostController::class, 'show'])
 Route::get('signup', [SignUpController::class, 'index']);
 Route::post('signup', [SignUpController::class, 'store']);
 
-Route::get('mypage/login', [UserLoginController::class, 'index']);
+Route::get('mypage/login', [UserLoginController::class, 'index'])->name('login');
 Route::post('mypage/login', [UserLoginController::class, 'login']);
+
+Route::middleware('auth')->group(function () {
+  Route::get('mypage/posts', [PostManageController::class, 'index'])->name('mypage.posts');
+  Route::post('mypage/logout', [UserLoginController::class, 'logout'])->name('logout');
+});

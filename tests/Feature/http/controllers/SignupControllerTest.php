@@ -62,28 +62,28 @@ class SignupControllerTest extends TestCase
             ->assertRedirect('signup');
 
         $this->post($url, ['name' => ''])
-            ->assertInvalid(['name' => 'nameは必ず指定してください。']);
+            ->assertInvalid(['name' => '名前は必ず指定してください。']);
 
         $this->post($url, ['name' => str_repeat('あ', 21)])
-            ->assertInvalid(['name' => 'nameは、20文字以下で指定してください。']);
+            ->assertInvalid(['name' => '名前は、20文字以下で指定してください。']);
 
         $this->post($url, ['name' => str_repeat('あ', 20)])
             ->assertvalid('name');
 
         $this->post($url, ['email' => ''])
-            ->assertInvalid(['email' => 'emailは必ず指定してください。']);
+            ->assertInvalid(['email' => 'メールアドレスは必ず指定してください。']);
 
         $this->post($url, ['email' => 'aa@ああ.net'])
-            ->assertInvalid(['email' => 'emailには、有効なメールアドレスを指定してください。']);
+            ->assertInvalid(['email' => 'メールアドレスには、有効なメールアドレスを指定してください。']);
 
         $this->post($url, ['email' => 'aaa@bbb.net'])
-            ->assertInvalid(['email' => 'emailの値は既に存在しています。']);
+            ->assertInvalid(['email' => 'メールアドレスの値は既に存在しています。']);
 
         $this->post($url, ['password' => ''])
-            ->assertInvalid(['password' => 'passwordは必ず指定してください。']);
+            ->assertInvalid(['password' => 'パスワードは必ず指定してください。']);
 
         $this->post($url, ['password' => 'abcd123'])
-            ->assertInvalid(['password' => 'passwordは、8文字以上で指定してください。']);
+            ->assertInvalid(['password' => 'パスワードは、8文字以上で指定してください。']);
 
         $this->post($url, ['password' => 'abcd1234'])
             ->assertvalid('password');
