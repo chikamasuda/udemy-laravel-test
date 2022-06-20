@@ -28,5 +28,6 @@ class UserLoginController extends Controller
         return back()->withErrors([
             'email' => 'メールアドレスかパスワードが間違っています。'
         ])->withInput();
+        //テスト
     }
 }
