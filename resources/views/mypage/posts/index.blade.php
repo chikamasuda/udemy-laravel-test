@@ -15,11 +15,13 @@
     @foreach($posts as $post)
     <tr>
         <td>
-            <a href="">{{ $post->title }}</a>
+            <a href="{{ route('mypage.posts.edit', $post) }}">{{ $post->title }}</a>
         </td>
         <td>
-            <form action="">
-                @csrf @method('delete') <input type="submit" value="削除">
+            <form method="post" action="{{ route('mypage.posts.delete', $post) }}">
+                @csrf 
+                @method('delete') 
+                <input type="submit" value="削除">
             </form>
         </td>
     </tr>

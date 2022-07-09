@@ -8,6 +8,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Post;
 use App\Models\user;
+use Illuminate\Support\Str;
+use Mockery;
+use Mockery\MockInterface;
+use App\Actions\StrRandom;
 use App\Models\Comment;
 use Carbon\Carbon;
 
@@ -102,5 +106,33 @@ class PostControllerTest extends TestCase
     $this->get('posts/' . $post->id)
       ->assertOk()
       ->assertSee('メリークリスマス!');
+  }
+
+  /** @test */
+  function ブログの詳細画面でランダムな文字列が表示されている()
+  {
+    // $this->instance(
+    //   StrRandom::class,
+    //   Mockery::mock(StrRandom::class, function (MockInterface $mock) {
+    //       $mock->shouldReceive('get')
+    //       ->once()
+    //       ->with(10)
+    //       ->andReturn('HELLOWORLD');
+    //   })
+    // );
+
+    // $mock = Mockery::mock(StrRandom::class);
+    // $mock->shouldReceive('get')->once()->with(10)->andReturn('HELLOWORLD');
+    // $this->instance(StrRandom::class, $mock);
+
+    $mock = $this->partialMock(StrRandom::class, function (MockInterface $mock) {
+      $mock->shouldReceive('get')->once()->with(10)->andReturn('HELLOWORLD');
+    });
+
+    $post = Post::factory()->create();
+
+    $this->get('posts/' . $post->id)
+      ->assertOk()
+      ->assertSee('HELLOWORLD');
   }
 }

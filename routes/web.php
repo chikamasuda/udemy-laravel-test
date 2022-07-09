@@ -5,6 +5,7 @@ use App\Http\Controllers\Mypage\PostManageController;
 use App\Http\Controllers\SignUpController;
 use App\Http\Controllers\UserLoginController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\PostShowLimit;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,7 @@ Route::get('/', [PostController::class, 'index']);
 Route::get('posts/{post}', [PostController::class, 'show'])
   ->name('posts.show')
   ->whereNumber('post');
+  //->middleware(PostShowLimit::class);
 
 Route::get('signup', [SignUpController::class, 'index']);
 Route::post('signup', [SignUpController::class, 'store']);
@@ -33,4 +35,7 @@ Route::middleware('auth')->group(function () {
   Route::post('mypage/logout', [UserLoginController::class, 'logout'])->name('logout');
   Route::get('mypage/posts/create', [PostManageController::class, 'create']);
   Route::post('mypage/posts/create', [PostManageController::class, 'store']);
+  Route::get('mypage/posts/edit/{post}', [PostManageController::class, 'edit'])->name('mypage.posts.edit');
+  Route::post('mypage/posts/edit/{post}', [PostManageController::class, 'update']);
+  Route::delete('mypage/posts/delete/{post}', [PostManageController::class, 'destroy'])->name('mypage.posts.delete');
 });
